@@ -248,7 +248,7 @@ class MainActivity : ComponentActivity() {
                     fontSize = 96.sp,
                 )
                 Text(
-                    text = "Você ganhou!",
+                    text = "You won!",
                     color = Color.White,
                     fontSize = 32.sp,
                     modifier = Modifier.padding(top = 16.dp),
@@ -257,7 +257,7 @@ class MainActivity : ComponentActivity() {
                     onClick = onPlayAgain,
                     modifier = Modifier.padding(top = 24.dp),
                 ) {
-                    Text(text = "Jogar de novo")
+                    Text(text = "Play again")
                 }
             }
         }

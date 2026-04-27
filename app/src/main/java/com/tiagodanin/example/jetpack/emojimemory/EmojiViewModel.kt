@@ -3,6 +3,9 @@ package com.tiagodanin.example.jetpack.emojimemory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class EmojiViewModel : ViewModel() {
     private val emojis = MutableLiveData<List<EmojiModel>>()
@@ -31,29 +34,37 @@ class EmojiViewModel : ViewModel() {
 
     fun updateShowVisibleCard(id: String) {
         val current = emojis.value ?: return
-        val selects = current.filter { it.isSelect }
-        val selectCount = selects.size
-        val charFind: String =
-            if (selectCount >= 2 && selects[0].char == selects[1].char) selects[0].char else ""
+        val alreadySelected = current.count { it.isSelect }
+        if (alreadySelected >= 2) return
 
-        val updated = current.map { item ->
-            var next = item
-            if (selectCount >= 2) {
-                next = next.copy(isSelect = false)
-            }
-            if (charFind.isNotEmpty() && next.char == charFind) {
-                next = next.copy(isVisible = false)
-            }
-            if (next.id == id && next.isVisible) {
-                next = next.copy(isSelect = true)
-            }
-            next
+        val afterClick = current.map { item ->
+            if (item.id == id && item.isVisible && !item.isSelect) {
+                item.copy(isSelect = true)
+            } else item
         }
+        emojis.value = afterClick
 
-        emojis.value = updated
+        val selected = afterClick.filter { it.isSelect }
+        if (selected.size < 2) return
 
-        if (updated.none { it.isVisible }) {
-            won.value = true
+        val isMatch = selected[0].char == selected[1].char
+        val matchedChar = selected[0].char
+
+        viewModelScope.launch {
+            delay(700)
+            val resolved = afterClick.map { item ->
+                when {
+                    isMatch && item.char == matchedChar ->
+                        item.copy(isSelect = false, isVisible = false)
+                    item.isSelect -> item.copy(isSelect = false)
+                    else -> item
+                }
+            }
+            emojis.value = resolved
+
+            if (resolved.none { it.isVisible }) {
+                won.value = true
+            }
         }
     }
 }
