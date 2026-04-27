@@ -5,65 +5,55 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class EmojiViewModel : ViewModel() {
-    private val emojis: MutableLiveData<MutableList<EmojiModel>> by lazy {
-        MutableLiveData<MutableList<EmojiModel>>()
+    private val emojis: MutableLiveData<List<EmojiModel>> by lazy {
+        MutableLiveData<List<EmojiModel>>()
     }
 
-    fun getEmojis(): LiveData<MutableList<EmojiModel>> {
-        return emojis
-    }
+    fun getEmojis(): LiveData<List<EmojiModel>> = emojis
 
     fun loadEmojis() {
-        emojis.value = mutableListOf(
+        emojis.value = listOf(
             EmojiModel("😍"),
-            EmojiModel(" 🥰"),
+            EmojiModel("🥰"),
             EmojiModel("😘"),
             EmojiModel("😭"),
             EmojiModel("😢"),
             EmojiModel("😂"),
             EmojiModel("😍"),
-            EmojiModel(" 🥰"),
+            EmojiModel("🥰"),
             EmojiModel("😘"),
             EmojiModel("😭"),
             EmojiModel("😢"),
             EmojiModel("😂"),
-        ).apply { shuffle() }
+        ).shuffled()
     }
 
     fun updateShowVisibleCard(id: String) {
-        val selects: List<EmojiModel>? = emojis.value?.filter { it -> it.isSelect }
-        val selectCount: Int = selects?.size ?: 0
-        var charFind: String = "";
-        if (selectCount >= 2) {
-            val hasSameChar: Boolean = selects!!.get(0).char == selects.get(1).char
-            if (hasSameChar) {
-                charFind = selects.get(0).char
+        val current = emojis.value ?: return
+        val selects = current.filter { it.isSelect }
+        val selectCount = selects.size
+        val charFind: String =
+            if (selectCount >= 2 && selects[0].char == selects[1].char) selects[0].char else ""
+
+        val updated = current.map { item ->
+            var next = item
+            if (selectCount >= 2) {
+                next = next.copy(isSelect = false)
             }
+            if (next.char == charFind && charFind.isNotEmpty()) {
+                next = next.copy(isVisible = false)
+            }
+            if (next.id == id && next.isVisible) {
+                next = next.copy(isSelect = true)
+            }
+            next
         }
 
-        val list: MutableList<EmojiModel>? = emojis.value?.map { it ->
-            if (selectCount >= 2) {
-                it.isSelect = false
-            }
-
-            if (it.char == charFind) {
-                it.isVisible = false
-            }
-
-            if (it.id == id) {
-                it.isSelect = true
-            }
-
-            it
-        } as MutableList<EmojiModel>?
-
-        val visibleCount: Int = list?.filter { it -> it.isVisible }?.size ?: 0
-        if (visibleCount <= 0) {
+        if (updated.none { it.isVisible }) {
             loadEmojis()
             return
         }
 
-        emojis.value?.removeAll { true }
-        emojis.value = list
+        emojis.value = updated
     }
 }

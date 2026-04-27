@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainContent() {
         Scaffold(
+            modifier = Modifier.safeDrawingPadding(),
             topBar = {
                 TopAppBar(
                     title = {

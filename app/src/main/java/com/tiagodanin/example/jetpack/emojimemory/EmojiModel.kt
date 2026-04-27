@@ -1,10 +1,10 @@
 package com.tiagodanin.example.jetpack.emojimemory
 
-import java.util.*
+import java.util.UUID
 
-class EmojiModel(
-    var char: String,
-    var isVisible: Boolean = true,
-    var isSelect: Boolean = false,
-    var id: String = UUID.randomUUID().toString(),
-) {}
+data class EmojiModel(
+    val char: String,
+    val isVisible: Boolean = true,
+    val isSelect: Boolean = false,
+    val id: String = UUID.randomUUID().toString(),
+)
