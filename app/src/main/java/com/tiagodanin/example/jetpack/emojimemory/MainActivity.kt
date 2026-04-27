@@ -4,20 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.Icon
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,20 +66,23 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
-        ) {
+        ) { innerPadding ->
             val cards: List<EmojiModel> by viewModel.getEmojis().observeAsState(listOf())
-            CardsGrid(cards = cards)
+            CardsGrid(
+                cards = cards,
+                modifier = Modifier.padding(innerPadding)
+            )
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun CardsGrid(cards: List<EmojiModel>) {
+    private fun CardsGrid(cards: List<EmojiModel>, modifier: Modifier = Modifier) {
         LazyVerticalGrid(
-            cells = GridCells.Fixed(4)
+            columns = GridCells.Fixed(4),
+            modifier = modifier
         ) {
-            items(cards.count()) { cardIndex ->
-                CardItem(cards[cardIndex])
+            items(cards) { card ->
+                CardItem(card)
             }
         }
     }
@@ -121,4 +127,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
