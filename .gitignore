@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Signing — never commit
+*.jks
+*.keystore
+keystore.properties
+upload_certificate.pem
+encryption_public_key.pem
+keystores/
+pepk.jar
+output.zip
