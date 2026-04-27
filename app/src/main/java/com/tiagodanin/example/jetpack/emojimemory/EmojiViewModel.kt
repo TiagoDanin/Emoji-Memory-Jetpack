@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class EmojiViewModel : ViewModel() {
-    private val emojis: MutableLiveData<List<EmojiModel>> by lazy {
-        MutableLiveData<List<EmojiModel>>()
-    }
+    private val emojis = MutableLiveData<List<EmojiModel>>()
+    private val won = MutableLiveData(false)
 
     fun getEmojis(): LiveData<List<EmojiModel>> = emojis
+    fun getWon(): LiveData<Boolean> = won
 
     fun loadEmojis() {
+        won.value = false
         emojis.value = listOf(
             EmojiModel("😍"),
             EmojiModel("🥰"),
@@ -40,7 +41,7 @@ class EmojiViewModel : ViewModel() {
             if (selectCount >= 2) {
                 next = next.copy(isSelect = false)
             }
-            if (next.char == charFind && charFind.isNotEmpty()) {
+            if (charFind.isNotEmpty() && next.char == charFind) {
                 next = next.copy(isVisible = false)
             }
             if (next.id == id && next.isVisible) {
@@ -49,11 +50,10 @@ class EmojiViewModel : ViewModel() {
             next
         }
 
-        if (updated.none { it.isVisible }) {
-            loadEmojis()
-            return
-        }
-
         emojis.value = updated
+
+        if (updated.none { it.isVisible }) {
+            won.value = true
+        }
     }
 }
